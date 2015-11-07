@@ -53,21 +53,12 @@ namespace BecomeSolid.Day1
                                 string responseString = streamReader.ReadToEnd();
 
                                 Console.WriteLine(responseString);
-                                JObject joResponse = JObject.Parse(responseString);
-                                JObject query = (JObject)joResponse["query"];
-                                JObject results = (JObject)query["results"];
-                                JObject rateObj = (JObject)results["rate"];
-                                string id = (string)rateObj["Id"];
-                                string name = (string)rateObj["Name"];
-                                string rate = (string)rateObj["Rate"];
-                                string date = (string)rateObj["Date"];
-                                string time = (string)rateObj["Time"];
-                                string ask = (string)rateObj["Ask"];
-                                string bid = (string)rateObj["Bid"];
 
-                                Console.WriteLine(string.Format("{0} is: {1} ", id, rate));
+                                Currency currency = new Currency(responseString);
 
-                                var message = "Курс " + name + "Дата " +date + "Время " + time + "Покупка " + ask + "Продажа " + bid;
+                                Console.WriteLine(string.Format("{0} is: {1} ", currency.Id, currency.Rate));
+
+                                var message = "Курс " + currency.Name + "Дата " + currency.Date + "Время " + currency.Time + "Покупка " + currency.Ask + "Продажа " + currency.Bid;
 
                                 var t = await bot.SendTextMessage(update.Message.Chat.Id, message);
                                 Console.WriteLine("Echo Message: {0}", message);
