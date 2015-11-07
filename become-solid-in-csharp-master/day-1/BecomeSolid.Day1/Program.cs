@@ -58,7 +58,7 @@ namespace BecomeSolid.Day1
 
                                 Console.WriteLine(string.Format("{0} is: {1} ", currency.Id, currency.Rate));
 
-                                var message = "Курс " + currency.Name + "Дата " + currency.Date + "Время " + currency.Time + "Покупка " + currency.Ask + "Продажа " + currency.Bid;
+                                var message = "Курс " + currency.Name + " Дата " + currency.Date + " Время " + currency.Time + " Покупка " + currency.Ask + " Продажа " + currency.Bid;
 
                                 var t = await bot.SendTextMessage(update.Message.Chat.Id, message);
                                 Console.WriteLine("Echo Message: {0}", message);
@@ -89,10 +89,6 @@ namespace BecomeSolid.Day1
                                 Console.WriteLine(string.Format("temp is: {0}", temp));
 
                                 var message = "In " + cityName + " " + description + " and the temperature is " + temp.ToString("+#;-#") + "°C";
-
-
-                                Console.WriteLine(string.Format("temp is: {0}", temp));
-
 
                                 var t = await bot.SendTextMessage(update.Message.Chat.Id, message);
                                 Console.WriteLine("Echo Message: {0}", message);
