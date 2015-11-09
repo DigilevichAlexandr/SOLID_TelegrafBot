@@ -16,10 +16,11 @@ namespace BecomeSolid.Day1
     {
         static void Main(string[] args)
         {
-            Run().Wait();
+            ArtifitialInteligence aI = new ArtifitialInteligence();
+            Run(aI).Wait();
         }
 
-        static async Task Run()
+        static async Task Run(ArtifitialInteligence aI)
         {
             var bot = new Api("127266371:AAHoh0eh4Nt0mzB1LOoZwg8E7vQqeoMswuI");
             
@@ -97,8 +98,10 @@ namespace BecomeSolid.Day1
                         else
                         {
                             await bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
+                            var t = await bot.SendTextMessage(update.Message.Chat.Id, aI.Ansver(update.Message.Text));
+                            
                             await Task.Delay(2000);
-                            var t = await bot.SendTextMessage(update.Message.Chat.Id, update.Message.Text);
+                            //var t = await bot.SendTextMessage(update.Message.Chat.Id, update.Message.Text);
                             Console.WriteLine("Echo Message: {0}", update.Message.Text);
                         }
                     }
