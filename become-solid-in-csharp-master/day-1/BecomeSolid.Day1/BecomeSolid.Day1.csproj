@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArtifitialInteligence.cs" />
     <Compile Include="Currency.cs" />
     <Compile Include="DAL\BotContext.cs" />
     <Compile Include="DAL\TaskContext.cs" />
