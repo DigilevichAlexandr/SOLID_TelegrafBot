@@ -11,7 +11,7 @@ namespace BecomeSolid.Day1.DAL
     class TaskContext:DbContext
     {
         public TaskContext()
-            :base("TaskConnection")
+            :base("DBConnectionTasks")
         { }
 
         public  DbSet<TaskModel> Tasks { get; set; }

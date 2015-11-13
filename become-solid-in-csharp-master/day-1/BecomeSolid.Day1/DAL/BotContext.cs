@@ -11,7 +11,7 @@ namespace BecomeSolid.Day1.DAL
     class BotContext: DbContext
     {
         public BotContext()
-            :base("DBConnection")
+            :base("DBConnectionAI")
         { }
 
         public DbSet<Ansver> Ansvers { get; set; }
