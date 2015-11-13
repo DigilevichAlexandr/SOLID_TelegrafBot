@@ -8,7 +8,7 @@ using BecomeSolid.Day1.Models;
 
 namespace BecomeSolid.Day1.DAL
 {
-    class BotContext: DbContext
+    class BotContext: DbContext,IDisposable
     {
         public BotContext()
             :base("DBConnectionAI")
@@ -16,5 +16,10 @@ namespace BecomeSolid.Day1.DAL
 
         public DbSet<Ansver> Ansvers { get; set; }
         public DbSet<Question> Questions { get; set; }
+
+        //public void Dispose()         
+        //{
+        //    Dispose(true);
+        //}
     }
 }

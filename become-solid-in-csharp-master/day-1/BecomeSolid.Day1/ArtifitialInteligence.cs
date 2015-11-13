@@ -14,18 +14,8 @@ namespace BecomeSolid.Day1
         {
             ansvers.Add("привет", "Привет, мы знакомы?");
             ansvers.Add("как тебя зовут?", "Гоги, а тебя?");
-            ansvers.Add("нет", "Гомогея ответ), ладно не обижайся, это я шучу типо так.");
             ansvers.Add("как дела?", "У меня рак.");
-            ansvers.Add("сочуствую.", "Да пошел ты!");
             ansvers.Add("я тебя люблю.", "Я тебя тоже.");
-            ansvers.Add("ты кто?", "Я тот, кто водил твою маму в ресторан. И нет я не твой папа, надеюсь.");
-            //ansvers.Add("", "");
-            //ansvers.Add("Привет", "");
-            //ansvers.Add("Привет", "");
-            //ansvers.Add("Привет", "");
-            //ansvers.Add("Привет", "");
-            //ansvers.Add("Привет", "");
-
         }
 
         public string Ansver(string question)
@@ -34,7 +24,7 @@ namespace BecomeSolid.Day1
             if (ansvers.TryGetValue(question,out ansver))
                 return ansver;
             else
-                return "Ты случайно не наркоманьё?";
+                return "Я не понял тебя?";
         }
     }
 }
