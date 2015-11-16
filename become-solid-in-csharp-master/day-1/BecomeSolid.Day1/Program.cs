@@ -39,10 +39,14 @@ namespace BecomeSolid.Day1
 
                 foreach (var update in updates)
                 {
-                   var t = await bot.SendTextMessage(update.Message.Chat.Id, requestResolver.GetResponceText(update.Message.Text));
-
-                    //if (update.Message.Type == MessageType.TextMessage)
-                    //{
+                    if (update.Message.Type == MessageType.TextMessage)
+                    {
+                        string responseText = requestResolver.GetResponceText(update.Message.Text, bot, update);
+                        var t = await bot.SendTextMessage(update.Message.Chat.Id, responseText);
+                        Console.WriteLine(responseText);
+                        //requestResolver.GetResponceText(update.Message.Text);
+                    }
+                    
                     //    var inputMessage = update.Message.Text;
                     //    if (inputMessage.StartsWith("/task"))
                     //    {

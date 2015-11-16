@@ -16,27 +16,38 @@ namespace BecomeSolid.Day1.BL
 {
     class RequestResolver : IRequestResolve
     {
-        public string GetResponceText(string request)
+        public string GetResponceText(string request, Api bot,Update update)
         {
             string[] splitedRequest = request.Split(' ');
-            string responseText="";
+            string responseText = "";
             switch (splitedRequest[0])
             {
                 case "/weather":
                     {
                         switch (splitedRequest.Length)
                         {
-                            case 1:responseText = BuiltWeatherResponce();
+                            case 1:
+                                responseText = BuiltWeatherResponce();
                                 break;
-                            case 2:responseText = BuiltWeatherResponce(splitedRequest[1]);
+                            case 2:
+                                responseText = BuiltWeatherResponce(splitedRequest[1]);
                                 break;
-                            //case 2:responseText = BuiltTaskResponse(splitedRequest[1], splitedRequest[2]);
-                            //    break;
+                                //case 2:responseText = Built___Response(splitedRequest[1], splitedRequest[2]);
+                                //    break;
                         }
 
                     }
                     break;
-                case "/task": responseText = BuiltTaskResponse(request);
+                case "/task":
+                    responseText = BuiltTaskResponse(request);
+                    break;
+                case "/AI":
+                    {
+                        bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
+                        Task.Delay(2000);
+                        responseText = BuiltArtifitialIntelegenceResponse(request);
+                    }
+
                     break;
             }
 
@@ -44,8 +55,8 @@ namespace BecomeSolid.Day1.BL
 
         }
 
-        public string BuiltWeatherResponce(string city = "Minsk",string date = "")
-        {            
+        public string BuiltWeatherResponce(string city = "Minsk", string date = "")
+        {
             if (date.Equals(""))
                 date = DateTime.Now.ToString();
             ///TODO date    
@@ -73,7 +84,7 @@ namespace BecomeSolid.Day1.BL
 
                 var message = "In " + cityName + " " + description + " and the temperature is " +
                               temp.ToString("+#;-#") + "°C";
-                
+
                 Console.WriteLine("Echo Message: {0}", message);
                 return message;
             }
@@ -133,6 +144,77 @@ namespace BecomeSolid.Day1.BL
                 return taskResponse.ToString();
             }
         }
-        
+
+        public string BuiltCurrencyResponse(string taskRequest)
+        {
+            var messageParts = taskRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var kindCurrency = messageParts.Length == 1 ? "USDBYR" : messageParts.Skip(1).First();
+            WebUtility.UrlEncode(kindCurrency);
+
+            string url =
+                string.Format(
+                    "https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.xchange+where+pair+=+%22{0}%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=",
+                    kindCurrency);
+            WebRequest request = WebRequest.Create(url);
+            WebResponse response = request.GetResponse();
+            using (var streamReader = new StreamReader(response.GetResponseStream()))
+            {
+                string responseString = streamReader.ReadToEnd();
+
+                Console.WriteLine(responseString);
+
+                Currency currency = new Currency(responseString);
+
+                Console.WriteLine(string.Format("{0} is: {1} ", currency.Id, currency.Rate));
+
+                var message = "Курс " + currency.Name + " Дата " + currency.Date + " Время " +
+                              currency.Time + " Покупка " + currency.Ask + " Продажа " +
+                              currency.Bid;
+                //Console.WriteLine("Echo Message: {0}", message);
+                return message;
+            }
+        }
+
+
+        public string BuiltArtifitialIntelegenceResponse(string taskRequest)
+        {
+            if (taskRequest.Contains("какая сейчас погода?"))
+                return BuiltWeatherResponce();
+            else
+            if (taskRequest.Contains("какой сейчас курс?"))
+                return BuiltCurrencyResponse(taskRequest);
+            else 
+            {
+                StringBuilder taskResponse = new StringBuilder("");
+                using (BotContext botContext = new BotContext())
+                {
+                    string[] tags = taskRequest.ToLower().Split();
+                    string ansver = "";
+
+                    IEnumerable<Ansver> ansvers = botContext.Ansvers;
+                    foreach (var tag in tags)
+                    {
+                        ansvers.Where(w => w.Value.Contains(tag));
+                        if (ansvers.Count() != 0)
+                        {
+                            ansver += ansvers.First().Value;
+                            break;
+                        }
+                    }
+
+                    if (ansver.Equals(""))
+                    {
+                        taskResponse.Append("к такому я не был готов");
+                    }
+                    else
+                    {
+                        taskResponse.Append(ansver);
+                    }
+                }
+                return taskResponse.ToString();
+            }
+            
+        }
+
     }
 }
