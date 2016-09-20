@@ -15,8 +15,8 @@ namespace DBCreationProject
             using (AnsverContex db = new AnsverContex())
             {
                 // создаем два объекта User 
-                Ansver a1 = new Ansver { Value= "привет"};
-                Ansver a2 = new Ansver { Value = "меня зовут Тимоша" };
+                Answer a1 = new Answer { Value= "привет"};
+                Answer a2 = new Answer { Value = "меня зовут Тимоша" };
 
                 Question q1 = new Question { Value = "привет" };
                 Question q2 = new Question { Value = "как тебя зовут" };
@@ -33,7 +33,7 @@ namespace DBCreationProject
                 var ansvers = db.Ansvers;
                 var questions = db.Questions;
                 Console.WriteLine("Список объектов:");
-                foreach (Ansver ansver in ansvers)
+                foreach (Answer ansver in ansvers)
                 {
                     Console.WriteLine("{0}.{1}", ansver.Id, ansver.Value);
                 }

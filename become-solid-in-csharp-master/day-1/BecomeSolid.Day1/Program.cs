@@ -25,7 +25,7 @@ namespace BecomeSolid.Day1
 
         private static async Task Run(IRequestResolve requestResolver)
         {
-            var bot = new Api("127266371:AAHoh0eh4Nt0mzB1LOoZwg8E7vQqeoMswuI");
+            var bot = new Api("285635729:AAGtYT09IoeFeb9g_-hKSfQ-fAoPyR7RNFM");
 
             var me = await bot.GetMe();
 

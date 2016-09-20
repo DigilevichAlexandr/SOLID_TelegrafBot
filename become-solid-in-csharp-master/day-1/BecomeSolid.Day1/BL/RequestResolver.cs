@@ -16,7 +16,7 @@ namespace BecomeSolid.Day1.BL
 {
     class RequestResolver : IRequestResolve
     {
-        public string GetResponceText(string request, Api bot,Update update)
+        public string GetResponceText(string request, Api bot, Update update)
         {
             string[] splitedRequest = request.Split(' ');
             string responseText = "";
@@ -179,11 +179,15 @@ namespace BecomeSolid.Day1.BL
         public string BuiltArtifitialIntelegenceResponse(string taskRequest)
         {
             if (taskRequest.Contains("какая сейчас погода?"))
+            {
                 return BuiltWeatherResponce();
+            }
             else
-            if (taskRequest.Contains("какой сейчас курс?"))
+                if (taskRequest.Contains("какой сейчас курс?"))
+            {
                 return BuiltCurrencyResponse(taskRequest);
-            else 
+            }
+            else
             {
                 StringBuilder taskResponse = new StringBuilder("");
                 using (BotContext botContext = new BotContext())
@@ -213,8 +217,6 @@ namespace BecomeSolid.Day1.BL
                 }
                 return taskResponse.ToString();
             }
-            
         }
-
     }
 }

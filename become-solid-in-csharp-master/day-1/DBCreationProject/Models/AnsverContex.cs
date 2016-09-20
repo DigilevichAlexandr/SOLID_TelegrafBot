@@ -13,7 +13,7 @@ namespace DBCreationProject.Models
             :base("DBConnection")
         { }
 
-        public DbSet<Ansver> Ansvers { get; set; }
+        public DbSet<Answer> Ansvers { get; set; }
         public DbSet<Question> Questions { get; set; }
     }
 }
