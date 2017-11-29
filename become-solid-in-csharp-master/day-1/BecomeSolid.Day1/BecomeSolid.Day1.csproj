@@ -74,14 +74,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArtifitialInteligence.cs" />
+    <Compile Include="BitcoinCurrency.cs" />
     <Compile Include="BL\IRequestResolve.cs" />
     <Compile Include="BL\RequestResolver.cs" />
+    <Compile Include="BL\ToDoManager.cs" />
     <Compile Include="Currency.cs" />
     <Compile Include="DAL\BotContext.cs" />
     <Compile Include="DAL\TaskContext.cs" />
     <Compile Include="Models\Ansver.cs" />
     <Compile Include="Models\Question.cs" />
     <Compile Include="Models\ToDo.cs" />
+    <Compile Include="NBRBCurrency.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

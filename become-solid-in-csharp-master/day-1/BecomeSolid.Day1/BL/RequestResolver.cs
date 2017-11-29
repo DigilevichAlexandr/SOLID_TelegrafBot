@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using File = System.IO.File;
+using System.Xml;
 
 namespace BecomeSolid.Day1.BL
 {
@@ -18,6 +19,7 @@ namespace BecomeSolid.Day1.BL
 	{
 		public string GetResponceText(string request, Api bot, Update update)
 		{
+			Console.WriteLine($"request - {request}");
 			string[] splitedRequest = request.Split(' ');
 			string command = splitedRequest[0].StartsWith("/") ? splitedRequest[0] : "";
 			string responseText = "";
@@ -41,10 +43,11 @@ namespace BecomeSolid.Day1.BL
 
 				}
 				break;
-			case "/task":
+			case "/todo":
 				responseText = BuiltTaskResponse(request);
 				break;
-			case "/AI": {
+			//case "/AI": {
+			default: {
 					bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
 					Task.Delay(2000);
 					responseText = BuiltArtifitialIntelegenceResponse(request);
@@ -96,18 +99,18 @@ namespace BecomeSolid.Day1.BL
 			}
 		}
 
-		public string BuiltTaskResponse(string taskRequest)
+		public string BuiltTaskResponse(string toDoRequest)
 		{
 			{
-				StringBuilder taskResponse = new StringBuilder("");
+				StringBuilder toDoResponse = new StringBuilder("");
 
 				//using (TaskContext taskContext = new TaskContext()) {
-				var messageParts = taskRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+				var messageParts = toDoRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
 				if (messageParts.Length > 1) {
-					string taskCommand = messageParts[1];
+					string toDoCommand = messageParts[1];
 
-					switch (taskCommand) {
+					switch (toDoCommand) {
 					case "clear": {
 							using (TaskContext taskContext = new TaskContext()) {
 								//IEnumerable<TaskModel> taskModels = taskContext.Tasks; 
@@ -116,7 +119,7 @@ namespace BecomeSolid.Day1.BL
 								}
 								//taskContext.Tasks.RemoveRange(taskContext.Tasks); 
 								taskContext.SaveChanges();
-								taskResponse.Append("Список заданий очищен.");
+								toDoResponse.Append("Список заданий очищен.");
 							}
 						}
 						break;
@@ -124,33 +127,24 @@ namespace BecomeSolid.Day1.BL
 					case "list": {
 							using (TaskContext taskContext = new TaskContext()) {
 								foreach (var task in taskContext.ToDos) {
-									taskResponse.Append(task.CreationtionDate);
-									taskResponse.Append(" ");
-									taskResponse.Append(task.Description);
-									taskResponse.Append("\n");
+									toDoResponse.Append(task.CreationtionDate);
+									toDoResponse.Append(" ");
+									toDoResponse.Append(task.Description);
+									toDoResponse.Append("\n");
 								}
 
 								if (taskContext.ToDos.Count() == 0)
-									taskResponse.Append("у вас нет напоминаний");
+									toDoResponse.Append("у вас нет напоминаний");
 							}
 						}
 						break;
 					//сделать через "напомни ..."
 					case "add": {
 							if (messageParts.Length > 2) {
-								string taskText = taskRequest.Remove(0, 9);
+								string toDoText = toDoRequest.Remove(0, 9);
 
-								//if (DateTime.TryParse(messageParts[2], out dateTime)) {
-								//	//messageParts.Last().Remove(messageParts.Last().Length-1, 1); 
-								//	string forDebug = string.Join(" ", messageParts);
-								//	taskContext.Tasks.Add(new TaskModel() { DateTime = dateTime, Description = string.Join(" ", messageParts) });
-								//	taskContext.SaveChanges();
-								//}
-								using (TaskContext taskContext = new TaskContext()) {
-									taskContext.ToDos.Add(new ToDo() { CreationtionDate = DateTime.Now, Description = taskText });
-									taskContext.SaveChanges();
-									taskResponse.Append($"({taskText}) добавлено в список дел.");
-								}
+								if (ToDoManager.AddToDo(toDoText))
+									toDoResponse.Append($"({toDoText}) добавлено в список дел.");
 							}
 						}
 						break;
@@ -159,21 +153,22 @@ namespace BecomeSolid.Day1.BL
 					return "/task clear - очистить список задач\n/task list - вывести список напоминаний\n/task add {что напомнить}- добавить напоминание";
 				//}
 
-				return taskResponse.ToString();
+				return toDoResponse.ToString();
 			}
 		}
 
 		public string BuiltCurrencyResponse(string taskRequest)
 		{
 			var messageParts = taskRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			var kindCurrency = messageParts.Length == 1 ? "USDBYR" : messageParts.Skip(1).First();
+			//var kindCurrency = messageParts.Length == 1 ? "USDBYR" : messageParts.Skip(1).First();
 
-			WebUtility.UrlEncode(kindCurrency);
+			//WebUtility.UrlEncode(kindCurrency);
 
-			string url =
-				string.Format(
-					"https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.xchange+where+pair+=+%22{0}%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=",
-					kindCurrency);
+			//string url =
+			//	string.Format(
+			//		"https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.xchange+where+pair+=+%22{0}%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=",
+			//		kindCurrency);			
+			string url = "http://www.apilayer.net/api/live?access_key=d02cf1bc79ea22f8f6cd4fdbb5486a01&currencies=BYN&format=1";
 
 			WebRequest request = WebRequest.Create(url);
 			WebResponse response = request.GetResponse();
@@ -183,18 +178,70 @@ namespace BecomeSolid.Day1.BL
 
 				Console.WriteLine(responseString);
 
-				Currency currency = new Currency(responseString);
+				ApilayerCurrency currency = new ApilayerCurrency(responseString);
 
-				Console.WriteLine(string.Format("{0} is: {1} ", currency.Id, currency.Rate));
+				Console.WriteLine($"Курс нового беларусского рубля к доллару {currency.USDBYN}");
 
-				var message = "Курс " + currency.Name + " Дата " + currency.Date + " Время " +
-							  currency.Time + " Покупка " + currency.Ask + " Продажа " +
-							  currency.Bid;
+				var message = $"Курс нового беларусского рубля к доллару {currency.USDBYN}";
 				//Console.WriteLine("Echo Message: {0}", message);
 				return message;
 			}
 		}
 
+		public string BuiltBitcoinCurrencyResponse(string taskRequest)
+		{
+			var messageParts = taskRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			//var kindCurrency = messageParts.Length == 1 ? "USDBYR" : messageParts.Skip(1).First();
+
+			//WebUtility.UrlEncode(kindCurrency);
+
+			//string url =
+			//	string.Format(
+			//		"https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.xchange+where+pair+=+%22{0}%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=",
+			//		kindCurrency);			
+			string url = "https://api.coinmarketcap.com/v1/ticker/bitcoin/";
+
+			WebRequest request = WebRequest.Create(url);
+			WebResponse response = request.GetResponse();
+
+			using (var streamReader = new StreamReader(response.GetResponseStream())) {
+				string responseString = streamReader.ReadToEnd();
+
+				Console.WriteLine(responseString);
+
+				BitcoinCurrency currency = new BitcoinCurrency(responseString);
+
+				Console.WriteLine($"Курс биткоина к доллару {currency.BitcoinUSD}");
+
+				var message = $"Курс биткоина к доллару {currency.BitcoinUSD}";
+				//Console.WriteLine("Echo Message: {0}", message);
+				return message;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns>URL with random cat picture</returns>
+		public string ShowCat()
+		{
+			StringBuilder result = new StringBuilder();
+			WebRequest request = WebRequest.Create("http://thecatapi.com/api/images/get?format=xml&results_per_page=1&api_key=MjQ4ODIy");
+			WebResponse response = request.GetResponse();
+
+			using (var streamReader = new StreamReader(response.GetResponseStream())) {
+				string responseString = streamReader.ReadToEnd();
+
+				Console.WriteLine(responseString);
+
+				XmlDocument doc = new XmlDocument();
+				doc.LoadXml(responseString);
+
+				result.Append(doc.ChildNodes[1].FirstChild.FirstChild.FirstChild.FirstChild.InnerText);
+			}
+
+			return result.ToString();
+		}
 
 		public string BuiltArtifitialIntelegenceResponse(string taskRequest)
 		{
@@ -203,6 +250,20 @@ namespace BecomeSolid.Day1.BL
 			} else
 				if (taskRequest.Contains("какой сейчас курс?")) {
 				return BuiltCurrencyResponse(taskRequest);
+			} else
+			if (taskRequest.Contains("какой сейчас курс биткоина?")) {
+				return BuiltBitcoinCurrencyResponse(taskRequest);
+			} else
+				if (taskRequest.Contains("напомни мне ")) {
+				ToDoManager.AddToDo(taskRequest.Remove(0, "напомни мне ".Length));
+				return "хорошо напомню";
+			} else
+				if (taskRequest.Contains("список")) {
+				return ToDoManager.ShowList();
+			} else
+			if (taskRequest.Contains("покажи кота")) {
+				return ShowCat();
+				//return "http://25.media.tumblr.com/tumblr_m2vycqKiHM1qc96lqo1_1280.jpg";
 			} else {
 				StringBuilder taskResponse = new StringBuilder("");
 
@@ -210,16 +271,7 @@ namespace BecomeSolid.Day1.BL
 					string[] tags = taskRequest.ToLower().Split();
 					string ansver = "";
 
-					//IEnumerable<Ansver> ansvers = botContext.Ansvers;
-					//foreach (var tag in tags) {
-					//	ansvers.Where(w => w.Value.Contains(tag));
-					//	if (ansvers.Count() != 0) {
-					//		ansver += ansvers.First().Value;
-					//		break;
-					//	}
-					//}
-
-					if (ansver.Equals("")) {
+					if (string.IsNullOrEmpty(ansver)) {
 						taskResponse.Append("к такому я не был готов");
 					} else {
 						taskResponse.Append(ansver);

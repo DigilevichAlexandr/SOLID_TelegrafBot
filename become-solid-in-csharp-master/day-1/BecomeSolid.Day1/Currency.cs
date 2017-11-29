@@ -24,17 +24,17 @@ namespace BecomeSolid.Day1
         public Currency(string responseString)
         {
             JoResponse = JObject.Parse(responseString);
-            Query = (JObject)JoResponse["query"];
-            Results = (JObject)Query["results"];
-            RateObj = (JObject)Results["rate"];
-            Id = (string)RateObj["Id"];
-            Name = (string)RateObj["Name"];
-            Rate = (string)RateObj["Rate"];
-            Date = (string)RateObj["Date"];
-            Time = (string)RateObj["Time"];
-            Ask = (string)RateObj["Ask"];
-            Bid = (string)RateObj["Bid"];
-        }
+			Query = (JObject) JoResponse["query"];
+			Results = (JObject) Query["results"];
+			RateObj = (JObject) Results["rate"];
+			Id = (string) RateObj["Id"];
+			Name = (string) RateObj["Name"];
+			Rate = (string) RateObj["Rate"];
+			Date = (string) RateObj["Date"];
+			Time = (string) RateObj["Time"];
+			Ask = (string) RateObj["Ask"];
+			Bid = (string) RateObj["Bid"];
+		}
 
     }
 }
