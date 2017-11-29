@@ -11,15 +11,16 @@ namespace BecomeSolid.Day1.DAL
     class BotContext: DbContext,IDisposable
     {
         public BotContext()
-            :base("DBConnectionAI")
+            :base("DBConnection")
         { }
 
         public DbSet<Ansver> Ansvers { get; set; }
         public DbSet<Question> Questions { get; set; }
+		//public DbSet<ToDo> Tasks { get; set; }
 
-        //public void Dispose()         
-        //{
-        //    Dispose(true);
-        //}
-    }
+		//public void Dispose()         
+		//{
+		//    Dispose(true);
+		//}
+	}
 }

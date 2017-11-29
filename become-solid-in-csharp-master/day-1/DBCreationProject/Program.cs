@@ -13,6 +13,8 @@ namespace DBCreationProject
 		static void Main(string[] args)
 		{
 			try {
+				
+
 				using (AnsverContex db = new AnsverContex()) {
 					// создаем два объекта User 
 					Answer a1 = new Answer { Value = "привет" };

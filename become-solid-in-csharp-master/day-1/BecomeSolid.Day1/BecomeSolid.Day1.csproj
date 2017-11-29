@@ -81,7 +81,7 @@
     <Compile Include="DAL\TaskContext.cs" />
     <Compile Include="Models\Ansver.cs" />
     <Compile Include="Models\Question.cs" />
-    <Compile Include="Models\TaskModel.cs" />
+    <Compile Include="Models\ToDo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

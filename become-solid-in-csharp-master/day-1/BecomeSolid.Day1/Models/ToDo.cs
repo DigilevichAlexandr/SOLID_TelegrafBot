@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace BecomeSolid.Day1.Models
 {
-    class TaskModel
+    class ToDo
     {
         public int Id { get; set; }
-        public DateTime DateTime { get; set; }
+        public DateTime CreationtionDate { get; set; }
         public  string Description { get; set; }
     }
 }
