@@ -13,14 +13,26 @@ using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System.Collections.Generic;
+using log4net.Repository.Hierarchy;
+using log4net;
+using log4net.Appender;
 
 namespace BecomeSolid.Day1.BL
 {
 	class RequestResolver : IRequestResolve
 	{
+		private log4net.ILog _log;
+
+		public RequestResolver(log4net.ILog log)
+		{
+			_log = log;
+		}
+
 		public string GetResponceText(string request, Api bot, Update update)
 		{
-			Console.WriteLine($"request - {request}");
+			Console.WriteLine($"date time - {DateTime.Now},request - {request}");
+			_log.Info($"date time - {DateTime.Now}, request - {request}");
+
 			string[] splitedRequest = request.Split(' ');
 			string command = splitedRequest[0].StartsWith("/") ? splitedRequest[0] : "";
 			string responseText = "";
@@ -80,7 +92,8 @@ namespace BecomeSolid.Day1.BL
 			using (var streamReader = new StreamReader(response.GetResponseStream())) {
 				string responseString = streamReader.ReadToEnd();
 
-				Console.WriteLine(responseString);
+				Console.WriteLine($"response - {responseString}");
+				_log.Info($"date time - {DateTime.Now}, response - {responseString}");
 
 				JObject joResponse = JObject.Parse(responseString);
 				JObject main = (JObject) joResponse["main"];
@@ -90,11 +103,13 @@ namespace BecomeSolid.Day1.BL
 				string cityName = (string) joResponse["name"];
 
 				Console.WriteLine(string.Format("temp is: {0}", temp));
+				_log.Info(string.Format("date time - {DateTime.Now}, temp is: {0}", temp));
 
 				var message = "In " + cityName + " " + description + " and the temperature is " +
 							  temp.ToString("+#;-#") + "°C";
 
 				Console.WriteLine("Echo Message: {0}", message);
+				_log.Info($"date time - {DateTime.Now}, Echo Message: {message}");
 
 				return message;
 			}
@@ -177,14 +192,15 @@ namespace BecomeSolid.Day1.BL
 			using (var streamReader = new StreamReader(response.GetResponseStream())) {
 				string responseString = streamReader.ReadToEnd();
 
-				Console.WriteLine(responseString);
+				Console.WriteLine($"response string: {responseString}");
+				_log.Info($"date time - {DateTime.Now}, response string: {responseString}");
 
 				ApilayerCurrency currency = new ApilayerCurrency(responseString);
 
 				Console.WriteLine($"Курс нового беларусского рубля к доллару {currency.USDBYN}");
+				_log.Info($"date time - {DateTime.Now}, Курс нового беларусского рубля к доллару {currency.USDBYN}");
 
 				var message = $"Курс нового беларусского рубля к доллару {currency.USDBYN}";
-				//Console.WriteLine("Echo Message: {0}", message);
 				return message;
 			}
 		}
@@ -209,13 +225,15 @@ namespace BecomeSolid.Day1.BL
 				string responseString = streamReader.ReadToEnd();
 
 				Console.WriteLine(responseString);
+				_log.Info($"date time - {DateTime.Now}, response string: {responseString}");
 
 				BitcoinCurrency currency = new BitcoinCurrency(responseString);
 
 				Console.WriteLine($"Курс биткоина к доллару {currency.BitcoinUSD}");
 
 				var message = $"Курс биткоина к доллару {currency.BitcoinUSD}";
-				//Console.WriteLine("Echo Message: {0}", message);
+				_log.Info($"date time - {DateTime.Now}, message {message}");
+
 				return message;
 			}
 		}
@@ -244,6 +262,15 @@ namespace BecomeSolid.Day1.BL
 				return ShowCat();
 				//return "http://25.media.tumblr.com/tumblr_m2vycqKiHM1qc96lqo1_1280.jpg";
 			} else
+			if (taskRequest.Contains("покажи лог")) {
+				var rootAppender = ((Hierarchy) LogManager.GetRepository())
+										 .Root.Appenders.OfType<FileAppender>()
+										 .FirstOrDefault();
+
+				string filename = rootAppender != null ? rootAppender.File : string.Empty;
+
+				return "хрен";
+			} else 
 			if (taskRequest.Contains("покажи")) {
 				return ShowPictureFromGoogle(taskRequest.Remove(0, 6));
 			} else {
@@ -277,7 +304,8 @@ namespace BecomeSolid.Day1.BL
 			using (var streamReader = new StreamReader(response.GetResponseStream())) {
 				string responseString = streamReader.ReadToEnd();
 
-				Console.WriteLine(responseString);
+				Console.WriteLine($"response string: {responseString}");
+				_log.Info($"date time - {DateTime.Now}, response string: {responseString}");
 
 				XmlDocument doc = new XmlDocument();
 				doc.LoadXml(responseString);
@@ -293,37 +321,7 @@ namespace BecomeSolid.Day1.BL
 		/// </summary>
 		/// <returns>Random cat picture URL found by google</returns>
 		private string ShowPictureFromGoogle(string requestText)
-		{
-			//StringBuilder result = new StringBuilder();
-			//WebRequest request = WebRequest.Create("https://www.google.by/");
-			//WebResponse response = request.GetResponse();
-
-			//using (var streamReader = new StreamReader(response.GetResponseStream())) {
-			//	string responseString = streamReader.ReadToEnd();
-
-			//	Console.WriteLine(responseString);
-
-			//	HtmlDocument doc = new HtmlDocument();
-			//	doc.LoadHtml(responseString);
-			//	var element = doc.
-
-
-			//	//result.Append(doc.ChildNodes[1].FirstChild.FirstChild.FirstChild.FirstChild.InnerText);
-			//}
-
-			////////////////////////////////////
-
-			//var url = "https://www.google.by/";
-			//var web = new HtmlWeb();
-			//var doc = web.Load(url);
-
-			//var value = doc
-			//	.DocumentNode
-			//	.SelectNodes("//td/input")
-			//	.First()
-			//	.Attributes["value"].Value;
-
-			//////////////////////////////////////
+		{			
 			try {
 				using (IWebDriver driver = new ChromeDriver()) {
 					driver.Navigate().GoToUrl("https://www.google.by/");
@@ -336,12 +334,6 @@ namespace BecomeSolid.Day1.BL
 
 					driver.FindElement(By.XPath("//*[@id='rg_s']/div[1]/a/img")).Click(); // сликнуть первую картинку
 					var result = driver.FindElement(By.XPath("//img[contains(@src,'http')]")).GetAttribute("src"); //взять урлу большого варианта
-
-					//IEnumerable<IWebElement> images = driver.FindElements(By.XPath("//img"));
-					//StringBuilder urls = new StringBuilder();
-					//int count = images.Count();
-					//
-					//var result = driver.FindElement(By.XPath("//*[@id='irc_cc']/div/div[1]/div[2]/div[2]/a/img")).GetAttribute("src");
 
 					return result;
 				}
