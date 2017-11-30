@@ -32,9 +32,7 @@ namespace BecomeSolid.Day1
 
 		private static async Task Run(IRequestResolve requestResolver)
 		{
-			//try {
 			var bot = new Api("454883056:AAFWlNt8oyeQouMasGb9JW824YGGk2c6znA");
-
 			var me = await bot.GetMe();
 
 			Console.WriteLine("Hello my name is {0}", me.Username);
@@ -64,8 +62,5 @@ namespace BecomeSolid.Day1
 				await Task.Delay(1000);
 			}
 		}
-		//catch(Exception ex) {
-
-		//}
 	}
 }

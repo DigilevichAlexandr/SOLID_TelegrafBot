@@ -9,17 +9,6 @@ namespace BecomeSolid.Day1
 {
 	public class ApilayerCurrency
 	{
-		//public JObject JoResponse { get; set; }
-		//public JObject Query { get; set; }
-		//public JObject Results { get; set; }
-		//public JObject RateObj { get; set; }
-		//public string Id { get; set; }
-		//public string Name { get; set; }
-		//public string Rate { get; set; }
-		//public string Date { get; set; }
-		//public string Time { get; set; }
-		//public string Ask { get; set; }
-		//public string Bid { get; set; }
 		public JObject JoResponse { get; set; }
 		public bool Success { get; set; }
 		public string Terms { get; set; }

@@ -16,7 +16,6 @@ namespace BecomeSolid.Day1.DAL
 
         public DbSet<Ansver> Ansvers { get; set; }
         public DbSet<Question> Questions { get; set; }
-		//public DbSet<ToDo> Tasks { get; set; }
 
 		//public void Dispose()         
 		//{

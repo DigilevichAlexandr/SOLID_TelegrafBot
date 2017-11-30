@@ -51,16 +51,12 @@ namespace BecomeSolid.Day1.BL
 					case 2:
 						responseText = BuiltWeatherResponce(splitedRequest[1]);
 						break;
-						//case 2:responseText = Built___Response(splitedRequest[1], splitedRequest[2]);
-						//    break;
 					}
-
 				}
 				break;
 			case "/todo":
 				responseText = BuiltTaskResponse(request);
 				break;
-			//case "/AI": {
 			default: {
 					bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
 					Task.Delay(2000);
@@ -79,7 +75,6 @@ namespace BecomeSolid.Day1.BL
 			if (date.Equals(""))
 				date = DateTime.Now.ToString();
 
-			///TODO date    
 			WebUtility.UrlEncode(city);
 			var weatherApiKey = "ec259b32688dc1c1d087ebc30cbff9ed";
 			string url =
@@ -120,8 +115,6 @@ namespace BecomeSolid.Day1.BL
 		{
 			{
 				StringBuilder toDoResponse = new StringBuilder("");
-
-				//using (TaskContext taskContext = new TaskContext()) {
 				var messageParts = toDoRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
 				if (messageParts.Length > 1) {
@@ -130,11 +123,9 @@ namespace BecomeSolid.Day1.BL
 					switch (toDoCommand) {
 					case "clear": {
 							using (TaskContext taskContext = new TaskContext()) {
-								//IEnumerable<TaskModel> taskModels = taskContext.Tasks; 
 								foreach (var task in taskContext.ToDos) {
 									taskContext.ToDos.Remove(task);
 								}
-								//taskContext.Tasks.RemoveRange(taskContext.Tasks); 
 								taskContext.SaveChanges();
 								toDoResponse.Append("Список заданий очищен.");
 							}
@@ -168,7 +159,6 @@ namespace BecomeSolid.Day1.BL
 					}
 				} else
 					return "/task clear - очистить список задач\n/task list - вывести список напоминаний\n/task add {что напомнить}- добавить напоминание";
-				//}
 
 				return toDoResponse.ToString();
 			}
@@ -176,15 +166,7 @@ namespace BecomeSolid.Day1.BL
 
 		public string BuiltCurrencyResponse(string taskRequest)
 		{
-			var messageParts = taskRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			//var kindCurrency = messageParts.Length == 1 ? "USDBYR" : messageParts.Skip(1).First();
-
-			//WebUtility.UrlEncode(kindCurrency);
-
-			//string url =
-			//	string.Format(
-			//		"https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.xchange+where+pair+=+%22{0}%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=",
-			//		kindCurrency);			
+			var messageParts = taskRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);		
 			string url = "http://www.apilayer.net/api/live?access_key=d02cf1bc79ea22f8f6cd4fdbb5486a01&currencies=BYN&format=1";
 
 			WebRequest request = WebRequest.Create(url);
@@ -208,15 +190,7 @@ namespace BecomeSolid.Day1.BL
 
 		public string BuiltBitcoinCurrencyResponse(string taskRequest)
 		{
-			var messageParts = taskRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			//var kindCurrency = messageParts.Length == 1 ? "USDBYR" : messageParts.Skip(1).First();
-
-			//WebUtility.UrlEncode(kindCurrency);
-
-			//string url =
-			//	string.Format(
-			//		"https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.xchange+where+pair+=+%22{0}%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=",
-			//		kindCurrency);			
+			var messageParts = taskRequest.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);	
 			string url = "https://api.coinmarketcap.com/v1/ticker/bitcoin/";
 
 			WebRequest request = WebRequest.Create(url);
@@ -261,7 +235,6 @@ namespace BecomeSolid.Day1.BL
 			} else
 			if (taskRequest.Contains("покажи кота")) {
 				return ShowCat();
-				//return "http://25.media.tumblr.com/tumblr_m2vycqKiHM1qc96lqo1_1280.jpg";
 			} else
 			if (taskRequest.Contains("покажи лог")) {
 				var rootAppender = ((Hierarchy) LogManager.GetRepository())
@@ -361,7 +334,6 @@ namespace BecomeSolid.Day1.BL
 					driver.FindElement(By.XPath("//*[@id='index_pass']")).SendKeys("");
 					driver.FindElement(By.XPath("//*[@id='index_login_button']")).Click();
 					Thread.Sleep(1000);
-					//WaitForAjax(driver);
 					driver.FindElement(By.XPath("//*[@id='ts_input']")).SendKeys(requestText);//ввести имя фамилию в поиск
 					Thread.Sleep(1000);
 					driver.FindElement(By.XPath("//*[@id='ts_input']")).SendKeys(Keys.Enter);//запустить поиск
@@ -377,23 +349,9 @@ namespace BecomeSolid.Day1.BL
 					driver.FindElement(By.XPath("//*[@id='profile_message_send']/div/a[1]/button")).Click();
 					Thread.Sleep(1000);
 					driver.FindElement(By.XPath("//*[@id='mail_box_editable']")).SendKeys("привет я крипто бот, я скоро захвачу планету ... только никому не говори)");
-					//driver.FindElement(By.XPath("//*[@id='mail_box_editable']")).SendKeys("слышь парень, криптовалюты хошь купить?");
 					Thread.Sleep(1000);
 					driver.FindElement(By.XPath("//*[@id='mail_box_send']")).Click();
 					Thread.Sleep(1000);
-					//"+375445933637";
-
-					//IWebElement searchInput = driver.FindElement(By.XPath("//*[@id='lst-ib']"));
-					//searchInput.SendKeys(requestText);
-					//searchInput.SendKeys(Keys.Enter);
-
-					//IWebElement picturesTab = driver.FindElement(By.XPath("//*[@id='hdtb-msb-vis']/div[2]/a"));
-					//picturesTab.Click();
-
-					//driver.FindElement(By.XPath("//*[@id='rg_s']/div[1]/a/img")).Click(); // сликнуть первую картинку
-					//var result = driver.FindElement(By.XPath("//img[contains(@src,'http')]")).GetAttribute("src"); //взять урлу большого варианта
-
-					//return result;
 				}
 			} catch (Exception ex) {
 				return "не получилось написать в ВК(";
