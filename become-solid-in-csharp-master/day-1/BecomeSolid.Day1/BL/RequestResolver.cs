@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using log4net.Repository.Hierarchy;
 using log4net;
 using log4net.Appender;
+using System.Threading;
 
 namespace BecomeSolid.Day1.BL
 {
@@ -270,9 +271,12 @@ namespace BecomeSolid.Day1.BL
 				string filename = rootAppender != null ? rootAppender.File : string.Empty;
 
 				return "хрен";
-			} else 
+			} else
 			if (taskRequest.Contains("покажи")) {
 				return ShowPictureFromGoogle(taskRequest.Remove(0, 6));
+			} else
+			if (taskRequest.Contains("напиши мне в вк, я ")) {
+				return WriteToVK(taskRequest.Remove(0, "напиши мне в вк, я ".Length));
 			} else {
 				StringBuilder taskResponse = new StringBuilder("");
 
@@ -321,7 +325,7 @@ namespace BecomeSolid.Day1.BL
 		/// </summary>
 		/// <returns>Random cat picture URL found by google</returns>
 		private string ShowPictureFromGoogle(string requestText)
-		{			
+		{
 			try {
 				using (IWebDriver driver = new ChromeDriver()) {
 					driver.Navigate().GoToUrl("https://www.google.by/");
@@ -342,6 +346,73 @@ namespace BecomeSolid.Day1.BL
 			}
 
 			return "";
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns>написал if it's done successfully</returns>
+		private string WriteToVK(string requestText)
+		{
+			try {
+				using (IWebDriver driver = new ChromeDriver()) {
+					driver.Navigate().GoToUrl("https://vk.com");
+					driver.FindElement(By.XPath("//*[@id='index_email']")).SendKeys("");
+					driver.FindElement(By.XPath("//*[@id='index_pass']")).SendKeys("");
+					driver.FindElement(By.XPath("//*[@id='index_login_button']")).Click();
+					Thread.Sleep(1000);
+					//WaitForAjax(driver);
+					driver.FindElement(By.XPath("//*[@id='ts_input']")).SendKeys(requestText);//ввести имя фамилию в поиск
+					Thread.Sleep(1000);
+					driver.FindElement(By.XPath("//*[@id='ts_input']")).SendKeys(Keys.Enter);//запустить поиск
+					Thread.Sleep(1000);
+					driver.FindElement(By.XPath("//*[@id='ui_rmenu_people']")).Click();//выбрать вкладку люди
+					Thread.Sleep(1000);
+					driver.FindElement(By.XPath("//*[@id='container12']/table/tbody/tr/td[1]/input[1]")).SendKeys("Беларусь");//ввести страну 
+					Thread.Sleep(1000);
+					driver.FindElement(By.XPath("//*[@id='container12']/table/tbody/tr/td[1]/input[1]")).SendKeys(Keys.Enter);//активировать фильтр страны
+					Thread.Sleep(3000);
+					driver.FindElement(By.XPath("//*[@id='results']/div[1]/div[1]")).Click(); //?
+					Thread.Sleep(2000);
+					driver.FindElement(By.XPath("//*[@id='profile_message_send']/div/a[1]/button")).Click();
+					Thread.Sleep(1000);
+					driver.FindElement(By.XPath("//*[@id='mail_box_editable']")).SendKeys("привет я крипто бот, я скоро захвачу планету ... только никому не говори)");
+					//driver.FindElement(By.XPath("//*[@id='mail_box_editable']")).SendKeys("слышь парень, криптовалюты хошь купить?");
+					Thread.Sleep(1000);
+					driver.FindElement(By.XPath("//*[@id='mail_box_send']")).Click();
+					Thread.Sleep(1000);
+					//"+375445933637";
+
+					//IWebElement searchInput = driver.FindElement(By.XPath("//*[@id='lst-ib']"));
+					//searchInput.SendKeys(requestText);
+					//searchInput.SendKeys(Keys.Enter);
+
+					//IWebElement picturesTab = driver.FindElement(By.XPath("//*[@id='hdtb-msb-vis']/div[2]/a"));
+					//picturesTab.Click();
+
+					//driver.FindElement(By.XPath("//*[@id='rg_s']/div[1]/a/img")).Click(); // сликнуть первую картинку
+					//var result = driver.FindElement(By.XPath("//img[contains(@src,'http')]")).GetAttribute("src"); //взять урлу большого варианта
+
+					//return result;
+				}
+			} catch (Exception ex) {
+				return "не получилось написать в ВК(";
+			}
+
+			return "написал";
+		}
+
+		private static void WaitForAjax(IWebDriver driver, int timeoutSecs = 10, bool throwException = false)
+		{
+			for (var i = 0; i < timeoutSecs; i++) {
+				var ajaxIsComplete = (bool) (driver as IJavaScriptExecutor).ExecuteScript("return jQuery.active == 0");
+				if (ajaxIsComplete)
+					return;
+				Thread.Sleep(1000);
+			}
+			if (throwException) {
+				throw new Exception("WebDriver timed out waiting for AJAX call to complete");
+			}
 		}
 	}
 }
