@@ -43,7 +43,7 @@ namespace BecomeSolid.Day1
 
 				foreach (var update in updates) {
 					if (update.Message?.Type == MessageType.TextMessage) {
-						string responseText = requestResolver.GetResponceText(update.Message.Text, bot, update);
+						string responseText = requestResolver.GetResponceText(update.Message.Text.ToLower(), bot, update);
 						var t = await bot.SendTextMessage(update.Message.Chat.Id, responseText);
 						Console.WriteLine(responseText);
 						//requestResolver.GetResponceText(update.Message.Text);

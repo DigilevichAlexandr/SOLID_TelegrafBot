@@ -1,7 +1,5 @@
 ﻿using BecomeSolid.Day1.DAL;
-using BecomeSolid.Day1.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,8 +8,11 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using File = System.IO.File;
 using System.Xml;
+using HtmlAgilityPack;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System.Collections.Generic;
 
 namespace BecomeSolid.Day1.BL
 {
@@ -24,7 +25,7 @@ namespace BecomeSolid.Day1.BL
 			string command = splitedRequest[0].StartsWith("/") ? splitedRequest[0] : "";
 			string responseText = "";
 
-			switch (command) {
+			switch (command.ToLower()) {
 			case "/start": {
 					responseText = "/weather - узнать погоду. \n/task - список задач \n/AI - исскуственный интелект!";
 				}
@@ -219,29 +220,7 @@ namespace BecomeSolid.Day1.BL
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns>URL with random cat picture</returns>
-		public string ShowCat()
-		{
-			StringBuilder result = new StringBuilder();
-			WebRequest request = WebRequest.Create("http://thecatapi.com/api/images/get?format=xml&results_per_page=1&api_key=MjQ4ODIy");
-			WebResponse response = request.GetResponse();
 
-			using (var streamReader = new StreamReader(response.GetResponseStream())) {
-				string responseString = streamReader.ReadToEnd();
-
-				Console.WriteLine(responseString);
-
-				XmlDocument doc = new XmlDocument();
-				doc.LoadXml(responseString);
-
-				result.Append(doc.ChildNodes[1].FirstChild.FirstChild.FirstChild.FirstChild.InnerText);
-			}
-
-			return result.ToString();
-		}
 
 		public string BuiltArtifitialIntelegenceResponse(string taskRequest)
 		{
@@ -264,6 +243,9 @@ namespace BecomeSolid.Day1.BL
 			if (taskRequest.Contains("покажи кота")) {
 				return ShowCat();
 				//return "http://25.media.tumblr.com/tumblr_m2vycqKiHM1qc96lqo1_1280.jpg";
+			} else
+			if (taskRequest.Contains("покажи")) {
+				return ShowPictureFromGoogle(taskRequest.Remove(0, 6));
 			} else {
 				StringBuilder taskResponse = new StringBuilder("");
 
@@ -280,6 +262,94 @@ namespace BecomeSolid.Day1.BL
 
 				return taskResponse.ToString();
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns>URL with random cat picture</returns>
+		private string ShowCat()
+		{
+			StringBuilder result = new StringBuilder();
+			WebRequest request = WebRequest.Create("http://thecatapi.com/api/images/get?format=xml&results_per_page=1&api_key=MjQ4ODIy");
+			WebResponse response = request.GetResponse();
+
+			using (var streamReader = new StreamReader(response.GetResponseStream())) {
+				string responseString = streamReader.ReadToEnd();
+
+				Console.WriteLine(responseString);
+
+				XmlDocument doc = new XmlDocument();
+				doc.LoadXml(responseString);
+
+				result.Append(doc.ChildNodes[1].FirstChild.FirstChild.FirstChild.FirstChild.InnerText);
+			}
+
+			return result.ToString();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns>Random cat picture URL found by google</returns>
+		private string ShowPictureFromGoogle(string requestText)
+		{
+			//StringBuilder result = new StringBuilder();
+			//WebRequest request = WebRequest.Create("https://www.google.by/");
+			//WebResponse response = request.GetResponse();
+
+			//using (var streamReader = new StreamReader(response.GetResponseStream())) {
+			//	string responseString = streamReader.ReadToEnd();
+
+			//	Console.WriteLine(responseString);
+
+			//	HtmlDocument doc = new HtmlDocument();
+			//	doc.LoadHtml(responseString);
+			//	var element = doc.
+
+
+			//	//result.Append(doc.ChildNodes[1].FirstChild.FirstChild.FirstChild.FirstChild.InnerText);
+			//}
+
+			////////////////////////////////////
+
+			//var url = "https://www.google.by/";
+			//var web = new HtmlWeb();
+			//var doc = web.Load(url);
+
+			//var value = doc
+			//	.DocumentNode
+			//	.SelectNodes("//td/input")
+			//	.First()
+			//	.Attributes["value"].Value;
+
+			//////////////////////////////////////
+			try {
+				using (IWebDriver driver = new ChromeDriver()) {
+					driver.Navigate().GoToUrl("https://www.google.by/");
+					IWebElement searchInput = driver.FindElement(By.XPath("//*[@id='lst-ib']"));
+					searchInput.SendKeys(requestText);
+					searchInput.SendKeys(Keys.Enter);
+
+					IWebElement picturesTab = driver.FindElement(By.XPath("//*[@id='hdtb-msb-vis']/div[2]/a"));
+					picturesTab.Click();
+
+					driver.FindElement(By.XPath("//*[@id='rg_s']/div[1]/a/img")).Click(); // сликнуть первую картинку
+					var result = driver.FindElement(By.XPath("//img[contains(@src,'http')]")).GetAttribute("src"); //взять урлу большого варианта
+
+					//IEnumerable<IWebElement> images = driver.FindElements(By.XPath("//img"));
+					//StringBuilder urls = new StringBuilder();
+					//int count = images.Count();
+					//
+					//var result = driver.FindElement(By.XPath("//*[@id='irc_cc']/div/div[1]/div[2]/div[2]/a/img")).GetAttribute("src");
+
+					return result;
+				}
+			} catch (Exception ex) {
+
+			}
+
+			return "";
 		}
 	}
 }
