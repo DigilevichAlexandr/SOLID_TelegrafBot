@@ -23,6 +23,7 @@ namespace BecomeSolid.Day1.BL
 	class RequestResolver : IRequestResolve
 	{
 		private log4net.ILog _log;
+		private static Random random = new Random();
 
 		public RequestResolver(log4net.ILog log)
 		{
@@ -40,7 +41,7 @@ namespace BecomeSolid.Day1.BL
 
 			switch (command.ToLower()) {
 			case "/start": {
-					responseText = "/weather - узнать погоду. \n/task - список задач \n/AI - исскуственный интелект!";
+					responseText = "/weather - узнать погоду. \n/todo - список задач\n/showmem\n/какая сейчас погода?\n/какой сейчас курс?\n/какой сейчас курс биткоина?\n/напомни мне \n/список\n/покажи кота\n/покажи лог\n/покажи \n/напиши мне в вк, я ";
 				}
 				break;
 			case "/weather": {
@@ -56,6 +57,10 @@ namespace BecomeSolid.Day1.BL
 				break;
 			case "/todo":
 				responseText = BuiltTaskResponse(request);
+				break;
+			case "/showmem": {
+					responseText = ShowPictureFromGoogle($"мем {request.Remove(0, "/showmem".Length)}");
+				}
 				break;
 			default: {
 					bot.SendChatAction(update.Message.Chat.Id, ChatAction.Typing);
@@ -246,11 +251,18 @@ namespace BecomeSolid.Day1.BL
 				return "хрен";
 			} else
 			if (taskRequest.Contains("покажи")) {
-				return ShowPictureFromGoogle(taskRequest.Remove(0, 6));
+				//return ShowPictureFromGoogle(taskRequest.Remove(0, 6));
+				return "пока забанен в гугле";
 			} else
 			if (taskRequest.Contains("напиши мне в вк, я ")) {
-				return WriteToVK(taskRequest.Remove(0, "напиши мне в вк, я ".Length));
-			} else {
+				//return WriteToVK(taskRequest.Remove(0, "напиши мне в вк, я ".Length));
+				return "пока не буду писать в вк";
+			} else 
+			//if (taskRequest.Contains("showmem")) {
+			//	return ShowPictureFromGoogle($"мем {RandomString(5)}");
+			//} 
+			//else 
+			{
 				StringBuilder taskResponse = new StringBuilder("");
 
 				using (BotContext botContext = new BotContext()) {
@@ -310,6 +322,7 @@ namespace BecomeSolid.Day1.BL
 					picturesTab.Click();
 
 					driver.FindElement(By.XPath("//*[@id='rg_s']/div[1]/a/img")).Click(); // сликнуть первую картинку
+					Thread.Sleep(1000);
 					var result = driver.FindElement(By.XPath("//img[contains(@src,'http')]")).GetAttribute("src"); //взять урлу большого варианта
 
 					return result;
@@ -371,6 +384,13 @@ namespace BecomeSolid.Day1.BL
 			if (throwException) {
 				throw new Exception("WebDriver timed out waiting for AJAX call to complete");
 			}
+		}
+
+		public static string RandomString(int length)
+		{
+			const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+			return new string(Enumerable.Repeat(chars, length)
+			  .Select(s => s[random.Next(s.Length)]).ToArray());
 		}
 	}
 }

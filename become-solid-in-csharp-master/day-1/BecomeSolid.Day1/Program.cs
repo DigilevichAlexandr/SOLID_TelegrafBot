@@ -41,26 +41,31 @@ namespace BecomeSolid.Day1
 			var offset = 0;
 
 			while (true) {
-				var updates = await bot.GetUpdates(offset);
+				try {
+					var updates = await bot.GetUpdates(offset);
 
-				foreach (var update in updates) {
-					if (update.Message?.Type == MessageType.TextMessage) {
+					foreach (var update in updates) {
 						try {
-							string responseText = requestResolver.GetResponceText(update.Message.Text.ToLower(), bot, update);
-							var t = await bot.SendTextMessage(update.Message.Chat.Id, responseText);
-							Console.WriteLine($"response text: {responseText}");
-							log.Info($"response text: {responseText}");
+							if (update.Message?.Type == MessageType.TextMessage) {
+
+								string responseText = requestResolver.GetResponceText(update.Message.Text.ToLower(), bot, update);
+								var t = await bot.SendTextMessage(update.Message.Chat.Id, responseText);
+								Console.WriteLine($"response text: {responseText}");
+								log.Info($"response text: {responseText}");
+
+								offset = update.Id + 1;
+							}
 						} catch (Exception ex) {
-							Console.WriteLine(ex.Message);
-							log.Error(ex.Message);
+
 						}
 					}
-
-					offset = update.Id + 1;
+				} catch (Exception ex) {
+					Console.WriteLine(ex.Message);
+					log.Error(ex.Message);
 				}
-
-				await Task.Delay(1000);
 			}
+
+			await Task.Delay(1000);
 		}
 	}
 }
